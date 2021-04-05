@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <center><h1 style="color:#515A5A;"> 🧠 how densely populated is Singapore? 🧠 </h1></center>
+  <center><p style="color:#515A5A">Data retrieved from <a href="https://data.gov.sg">data.gov.sg</a></p></center>
+  <title> Assignment Three </title>
+  <link href = "index.css" rel = "stylesheet" type="text/css"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+  <div class="tooltip"></div>
+</head>
+
+<body>
+  <div id="map"></div>
+  <script src="https://d3js.org/d3.v6.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+  <script>
+
+  let tiles = new L.tileLayer('https://maps-{s}.onemap.sg/v3/Default/{z}/{x}/{y}.png', {
+    detectRetina: true,
+    maxZoom: 20,
+    minZoom: 11.5,
+    //Do not remove this attribution
+    attribution: '<img src="https://docs.onemap.sg/maps/images/oneMap64-01.png" style="height:20px;width:20px;">' +
+                 'New OneMap | Map data © contributors, <a href="http://SLA.gov.sg">Singapore Land Authority</a>'
+  });
+
+  let map = new L.Map("map", {
+      center: [1.347833, 103.809357], 
+      zoom: 11.5,
+      maxBounds: L.latLngBounds(L.latLng(1.1, 103.5), L.latLng(1.5, 104.3))
+      })
+      .addLayer(tiles);
+
+  let svg = d3.select(map.getPanes().overlayPane)
+      .append("svg")
+      // .attr("width", 1000)
+      // .attr("height", 600)
+      .attr("width", window.innerWidth)
+      .attr("height", window.innerHeight)
+          .append("g")
+          .attr("id","svgLayer")
+          .attr("class", "leaflet-zoom-hide");
+
+  function projectPoint(x, y) {
+    var point = map.latLngToLayerPoint(new L.LatLng(y, x));
+    this.stream.point(point.x, point.y);
+  }
+
+  let projection = d3.geoTransform({point: projectPoint});
+  let geopath = d3.geoPath().projection(projection);
+
+  // Load external data and boot
+  Promise.all([d3.json("sgmap.json"), d3.csv("population2020.csv")]).then(data => {
+
+    // console.log(data[0]);
+    // console.log(data[1]);
+
+    let sgmap = data[0]
+    let population2020 = data[1]
+    let geopath = d3.geoPath().projection(projection);
+
+  // function that returns a colour based on density
+  function getColor(d) {
+    return d > 1000 ? '#800026' :
+           d > 500  ? '#BD0026' :
+           d > 200  ? '#E31A1C' :
+           d > 100  ? '#FC4E2A' :
+           d > 50   ? '#FD8D3C' :
+           d > 20   ? '#FEB24C' :
+           d > 10   ? '#FED976' :
+                      '#FFEDA0';
+  }
+
+  //adding a nice touch
+  function style(feature) {
+    return {
+        fillColor: getColor(feature.properties.density),
+        weight: 2,
+        opacity: 1,
+        color: 'white',
+        dashArray: '3',
+        fillOpacity: 0.7
+    };
+  }
+
+  for(i=0; i<population2020.length; i++){
+    // grab subzone name
+    var dataSubz = population2020[i].subzone;
+
+    //grab data value, and convert from string to float
+    var dataValue = parseFloat(population2020[i].Population);
+
+    //find the corresponding state inside the GeoJSON
+    for(var n = 0; n < sgmap.features.length; n++){
+
+      // properties name gets the states name
+      var jsonSubz = sgmap.features[n].properties.Name;
+      // if statment to merge by name of state
+      if(dataSubz == jsonSubz){
+        //Copy the data value into the JSON
+        // basically creating a new value column in JSON data
+        sgmap.features[n].properties.value = dataValue;
+        console.log("hello")
+
+        //stop looking through the JSON
+        break;
+      }
+      
+    }
+  }
+
+  svg.append("g")
+      .attr("id", "districts")
+      .selectAll("path")
+      .data(data[0].features)
+      .enter()
+      .append("path")
+      .attr("d", geopath)
+      .classed("district", true)
+      .classed("leaflet-interactive", true);
+      // .attr("fill", "black");
+
+  map.on('zoomend', onZoom);
+
+  function onZoom() {
+    var bounds = geopath.bounds(data[0]),
+        topLeft = bounds[0],
+        bottomRight = bounds[1];
+
+    var svg = d3.select(map.getPanes().overlayPane).select("svg");
+        
+    svg
+        .attr("width", bottomRight[0] - topLeft[0])
+        .attr("height", bottomRight[1] - topLeft[1])
+        .style("left", topLeft[0] + "px")
+        .style("top", topLeft[1] + "px");
+       
+    svg.select("g").attr("transform", "translate(" + -topLeft[0] + "," + -topLeft[1] + ")");
+    d3.select("g#districts").selectAll("path")
+       .attr("d", geopath);
+  }
+})
+
+</script>
+
+</body>
+</html>

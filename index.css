@@ -1,0 +1,17 @@
+/*Assignment Three (02.526 Interactive Data Visualisation)*/
+
+body {
+	text-align: center; 
+	margin: 100 
+}
+
+#map {
+	width: 1000px;
+	height: 550px;
+}
+
+.district {
+    fill: none;
+    stroke: #EE3912;
+    stroke-dasharray: 3;
+}
