@@ -1,2 +1,2 @@
-- map retrieved from OneMaps
-- population data retrieved from data.gov.sg
+- map retrieved from Singapore Land Authority (http://SLA.gov.sg)
+- population data retrieved from Data.gov.sg (https://data.gov.sg)
