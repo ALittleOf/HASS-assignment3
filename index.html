@@ -4,9 +4,10 @@
 <html>
 
 <head>
-  <meta charset="UTF-8">
+  <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
   <center><h1 style="color:#515A5A;"> 🧠 how densely populated is Singapore? 🧠 </h1></center>
-  <center><p style="color:#515A5A">Data retrieved from <a href="https://data.gov.sg">data.gov.sg</a></p></center>
+  <center><h3 style="color:#515A5A">Data retrieved from <a href="https://data.gov.sg">data.gov.sg</a></h3></center>
+  <center><p style="color:#515A5A">Work in Progress: only the male population reflected </p></center>
   <title> Assignment Three </title>
   <link href = "index.css" rel = "stylesheet" type="text/css"/>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
@@ -15,9 +16,15 @@
 
 <body>
   <div id="map"></div>
+  <svg id="districts"></svg>
+  <div class="tooltip"></div>
   <script src="https://d3js.org/d3.v6.min.js"></script>
   <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
   <script>
+
+  var colorScale = d3.scaleThreshold()
+    .domain([10, 500, 1000, 1500, 5000, 10000, 15000, 20000, 25000])
+    .range(d3.schemeBlues[9]);
 
   let tiles = new L.tileLayer('https://maps-{s}.onemap.sg/v3/Default/{z}/{x}/{y}.png', {
     detectRetina: true,
@@ -63,56 +70,45 @@
     let population2020 = data[1]
     let geopath = d3.geoPath().projection(projection);
 
-  // //adding a nice touch
-  // function style(feature) {
-  //   return {
-  //       fillColor: getColor(feature.properties.density),
-  //       weight: 2,
-  //       opacity: 1,
-  //       color: 'white',
-  //       dashArray: '3',
-  //       fillOpacity: 0.7
-  //   };
-  // }
+    // adding population to subzone
+    for(i=0; i<population2020.length; i++){
+      // grab subzone name
+      var dataSubz = population2020[i].Subzone;
 
-  for(i=0; i<population2020.length; i++){
-    // grab subzone name
-    var dataSubz = population2020[i].Subzone;
+      //grab data value, and convert from string to float
+      var dataValue = parseFloat(population2020[i].Population);
 
-    //grab data value, and convert from string to float
-    var dataValue = parseFloat(population2020[i].Population);
+      //find the corresponding state inside the GeoJSON
+      for(var n = 0; n < sgmap.features.length; n++){
 
-    //find the corresponding state inside the GeoJSON
-    for(var n = 0; n < sgmap.features.length; n++){
+        // properties name gets the states name
+        var jsonSubz = sgmap.features[n].properties.Name;
+        // if statment to merge by name of state
+        if(dataSubz.toUpperCase() == jsonSubz){
+          //Copy the data value into the JSON
+          // basically creating a new value column in JSON data
+          sgmap.features[n].properties.value = dataValue;
+          console.log(sgmap.features[n].properties.value)
+          // console.log("hello")
 
-      // properties name gets the states name
-      var jsonSubz = sgmap.features[n].properties.Name;
-      // if statment to merge by name of state
-      if(dataSubz.toUpperCase() == jsonSubz){
-        //Copy the data value into the JSON
-        // basically creating a new value column in JSON data
-        sgmap.features[n].properties.value = dataValue;
-        console.log(sgmap.features[n].properties.value)
-        // console.log("hello")
-
-        //stop looking through the JSON
-        break;
-      }
+          //stop looking through the JSON
+          break;
+        }
       
     }
   }
 
-  // function that returns a colour based on density
-  function getColor(dataValue) {
-    return dataValue > 1000 ? '#800026' :
-           dataValue > 500  ? '#BD0026' :
-           dataValue > 200  ? '#E31A1C' :
-           dataValue > 100  ? '#FC4E2A' :
-           dataValue > 50   ? '#FD8D3C' :
-           dataValue > 20   ? '#FEB24C' :
-           dataValue > 10   ? '#FED976' :
-                      '#FFEDA0';
-  }
+  // // function that returns a colour based on density
+  // function getColor(d) {
+  //   return d > 1000 ? '#800026' :
+  //          d > 500  ? '#BD0026' :
+  //          d > 200  ? '#E31A1C' :
+  //          d > 100  ? '#FC4E2A' :
+  //          d > 50   ? '#FD8D3C' : 
+  //          d > 20   ? '#FEB24C' :
+  //          d > 10   ? '#FED976' :
+  //                     '#FFEDA0';
+  // }
   
   svg.append("g")
       .attr("id", "districts")
@@ -121,12 +117,38 @@
       .enter()
       .append("path")
       .attr("d", geopath)
-      .classed("district", true)
+      .classed("district", true) //black base map if commented out
       .classed("leaflet-interactive", true);
-      // .attr("fill", "black");
+      // .on("mouseover", handleMouseOver)
+      // .on("mouseout", handleMouseOut);
+
+      // .on("mouseover", (event, d) => {
+      //   if (dataValue >0){
+      //     d3.select(".tooltip")
+      //     .text(jsonSubz + ": "+ dataValue)
+      //     .style("left", (event.pageX+13) + "px")
+      //     .style("top", (event.pageY+13) + "px");
+      // }
+      //   else {
+      //     d3.select(".tooltip")
+      //     .text(jsonSubz + ": "+ "undefined")
+      //     .style("left", (event.pageX+13) + "px")
+      //     .style("top", (event.pageY+13) + "px") }
+      //   })
+      // .attr("fill", d=> {
+      //     return colorScale(dataValue);
+      // })
+      // .on("mouseout", (event,d)=> {
+      //   d3.select(".tooltip")
+      //   .text("");
+      //   d3.select(svg.selectAll("path")
+      //   .attr("opacity", 1));
+      //   d3.select(event.currentTarget) 
+      // })
 
   map.on('zoomend', onZoom);
 
+  // zoom in and out
   function onZoom() {
     var bounds = geopath.bounds(data[0]),
         topLeft = bounds[0],
@@ -144,6 +166,39 @@
     d3.select("g#districts").selectAll("path")
        .attr("d", geopath);
   }
+  // Create Event Handlers for mouse
+  function handleMouseOver(d, i) {  // Add interactivity
+    // Use D3 to select element, change color and size
+    d3.select(this).attr({
+      fill: "orange",
+      r: radius * 2
+    });
+
+    // Specify where to put label of text
+    svg.append("text").attr({
+       id: "t" + d.x + "-" + d.y + "-" + i,  // Create an id for text so we can select it later for removing on mouseout
+        x: function() { return xScale(d.x) - 30; },
+        y: function() { return yScale(d.y) - 15; }
+    })
+    .text(function() {
+      return [d.x, d.y];  // Value of the text
+    });
+      }
+
+  function handleMouseOut(d, i) {
+    // Use D3 to select element, change color back to normal
+    d3.select(this).attr({
+      fill: "black",
+      r: radius
+    });
+
+    // Select text by id and then remove
+    d3.select("#t" + d.x + "-" + d.y + "-" + i).remove();  // Remove text location
+  }
+
+
+
+
 })
 
 </script>

@@ -1,6 +1,7 @@
 /*Assignment Three (02.526 Interactive Data Visualisation)*/
 
 body {
+	font-family: 'Chalkduster', 'Helvetica', 'sans-serif';
 	text-align: center; 
 	margin: 100 
 }
@@ -15,3 +16,22 @@ body {
     stroke: #EE3912;
     stroke-dasharray: 3;
 }
+
+.tooltip {
+    position:absolute;
+    background-color: rgba(255,255,255, 0.9);
+    width: 200px;
+    height: auto;
+    text-align:center;
+    margin-top:15px;
+    z-index: +2;
+
+}
+
+    
+path:hover {
+  stroke:#A0A0A0;
+  opacity: 0.5;
+stroke-width:4;
+}
+
