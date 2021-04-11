@@ -31,28 +31,29 @@
   let tiles = new L.tileLayer('https://maps-{s}.onemap.sg/v3/Default/{z}/{x}/{y}.png', {
     detectRetina: true,
     maxZoom: 20,
-    minZoom: 11.5,
+    minZoom: 10,
     //Do not remove this attribution
     attribution: '<img src="https://docs.onemap.sg/maps/images/oneMap64-01.png" style="height:20px;width:20px;">' +
                  'New OneMap | Map data © contributors, <a href="http://SLA.gov.sg">Singapore Land Authority</a>'
   });
 
   let map = new L.Map("map", {
-      center: [1.347833, 103.809357], 
-      zoom: 11.5,
-      maxBounds: L.latLngBounds(L.latLng(1.1, 103.5), L.latLng(1.5, 104.3))
-      })
-      .addLayer(tiles);
+    // center: [1.347833, 103.809357], 
+    center: [1, 103.809357], 
+    zoom: 10,
+    maxBounds: L.latLngBounds(L.latLng(1.1, 103.5), L.latLng(1.5, 104.3))
+    })
+    .addLayer(tiles);
 
   let svg = d3.select(map.getPanes().overlayPane)
-      .append("svg")
-      // .attr("width", 1000)
-      // .attr("height", 600)
-      .attr("width", window.innerWidth)
-      .attr("height", window.innerHeight)
-          .append("g")
-          .attr("id","svgLayer")
-          .attr("class", "leaflet-zoom-hide");
+    .append("svg")
+    // .attr("width", 1000)
+    // .attr("height", 600)
+    .attr("width", window.innerWidth)
+    .attr("height", window.innerHeight)
+        .append("g")
+        .attr("id","svgLayer")
+        .attr("class", "leaflet-zoom-hide");
 
   function projectPoint(x, y) {
     var point = map.latLngToLayerPoint(new L.LatLng(y, x));
@@ -131,40 +132,40 @@ map.on('zoomend', onZoom);
   }
 
   svg.append("g")
-      .attr("id", "districts")
-      .selectAll("path")
-      .data(sgmap.features)
-      .enter()
-      .append("path")
-      .attr("d", geopath)
-      // .classed("district", true) //black base map if commented out
-      .classed("leaflet-interactive", true)
-      // .on("mouseover", handleMouseOver)
-      // .on("mouseout", handleMouseOut);
+    .attr("id", "districts")
+    .selectAll("path")
+    .data(sgmap.features)
+    .enter()
+    .append("path")
+    .attr("d", geopath)
+    // .classed("district", true) //black base map if commented out
+    .classed("leaflet-interactive", true)
+    // .on("mouseover", handleMouseOver)
+    // .on("mouseout", handleMouseOut);
 
-      .on("mouseover", (event, dataValue) => {
-        if (dataValue > 0){
-          d3.select(".tooltip")
-          .text(jsonSubz + ": "+ dataValue)
-          .style("left", (event.pageX+15) + "px")
-          .style("top", (event.pageY+15) + "px");
-      }
-        else {
-          d3.select(".tooltip")
-          .text(jsonSubz + ": "+ "undefined")
-          .style("left", (event.pageX+15) + "px")
-          .style("top", (event.pageY+15) + "px") }
-        })
-      .attr("fill", dataValue => {
-          return colorScale(dataValue)
-      })
-      .on("mouseout", (event,dataValue)=> {
+    .on("mouseover", (event, dataValue) => {
+      if (dataValue > 0){
         d3.select(".tooltip")
-        .text("");
-        d3.select(svg.selectAll("path")
-        .attr("opacity", 1));
-        d3.select(event.currentTarget) 
-      });
+        .text(jsonSubz + ": "+ dataValue)
+        .style("left", (event.pageX+15) + "px")
+        .style("top", (event.pageY+15) + "px");
+    }
+      else {
+        d3.select(".tooltip")
+        .text(jsonSubz + ": "+ "undefined")
+        .style("left", (event.pageX+15) + "px")
+        .style("top", (event.pageY+15) + "px") }
+      })
+    .attr("fill", dataValue => {
+        return colorScale(dataValue)
+    })
+    .on("mouseout", (event,dataValue)=> {
+      d3.select(".tooltip")
+      .text("");
+      d3.select(svg.selectAll("path")
+      .attr("opacity", 1));
+      d3.select(event.currentTarget) 
+    });
 
   // // Create Event Handlers for mouse
   // function handleMouseOver(d, i) {  // Add interactivity
