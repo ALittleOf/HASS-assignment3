@@ -1,0 +1,297 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style></style>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+</head>
+<body>
+    <div class="form-check">Color Scheme:
+        <select name="colorScheme" id="colorSchemeSelect" onchange="javascript:drawD3();">
+            <option value="RdYlGn">RdYlGn</option>
+            <option value="RdYlBu">RdYlBu</option>
+            <option value="YlGnBu">YlGnBu</option>
+            <option value="OrRd">OrRd</option>
+            <option value="BrBG">BrBG</option>
+            <option value="PiYG">PiYG</option>
+            <option value="PRGn">PRGn</option>
+            <option value="PuOr">PuOr</option>
+            <option value="RdBu">RdBu</option>
+            <option value="Spectral">Spectral</option>
+        </select>      </div>
+    </div>
+
+
+    <svg id="map">
+        <style>
+            .small { font: italic 8px sans-serif; }
+            .normal { font: italic 13px sans-serif; }
+            .heavy { font: bold 30px sans-serif; }
+        
+            /* Note that the color of the text is set with the    *
+             * fill property, the color property is for HTML only */
+            .italic { font: italic 20px serif; fill: red; }
+        </style>
+        <g id="summary">
+            <text x="40" y="40" class="normal">Population </text>
+            <text x="110" y="40" class="heavy">2020</text>
+            <text x="55" y="55" class="normal">by</text>
+            <text x="75" y="55" class="italic">District</text>
+        </g>
+        <g id="control">
+            <text x="560" y="40" class="normal" id="SelectedSubTown">Town:</text>
+            <text x="560" y="60" class="normal" id="SelectedPopulation">Population : </text>
+        </g>
+        <g id="maplegend">
+            <text x="560" y="370" class="normal">Legend</text>
+            <!-- <text x="560" y="390" class="small" id="legend2">legend2</text> -->
+
+
+
+
+            <g id="legend">
+                <text x="560" y="370" class="normal">Legend</text>
+                <!-- <text x="560" y="390" class="small" id="legend2">legend2</text> -->
+                <text x="560" y="390" class="small"> 0 to 329</text>
+                <text x="560" y="400" class="small"> 330 to 1059</text>
+                <text x="560" y="410" class="small"> 1060 to 2979</text>
+                <text x="560" y="420" class="small"> 2980 to 4609</text>
+                <text x="560" y="430" class="small"> 4610 to 6469</text>
+                <text x="560" y="440" class="small"> 6470 to 9289</text>
+                <text x="560" y="450" class="small"> 9290 to 13419</text>
+                <text x="560" y="460" class="small"> 13420 to 19009</text>
+                <text x="560" y="470" class="small"> 19010 to 63960</text>
+            </g>
+        </g>
+    </svg>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/2.1.0/chroma.min.js" integrity="sha512-yocoLferfPbcwpCMr8v/B0AB4SWpJlouBwgE0D3ZHaiP1nuu5djZclFEIj9znuqghaZ3tdCMRrreLoM8km+jIQ==" crossorigin="anonymous"></script>
+    <script>
+
+    let width = 1000, height = 600;
+
+    let svg = d3.select("svg").attr("viewBox", "0 0 " + width + " " + height);
+
+    const noDataColor="#aaa"
+    const colorPopRange = JSON.parse(
+        '[ \
+            {"level":1, "lower":0,     "upper":329},   \
+            {"level":2, "lower":330,   "upper":1059},  \
+            {"level":3, "lower":1060,  "upper":2979},  \
+            {"level":4, "lower":2980,  "upper":4609},  \
+            {"level":5, "lower":4610,  "upper":6469},  \
+            {"level":6, "lower":6470,  "upper":9289},  \
+            {"level":7, "lower":9290,  "upper":13419}, \
+            {"level":8, "lower":13420, "upper":19009}, \
+            {"level":9, "lower":19010, "upper":63960}  \
+        ]' );
+    var colorPopList=[];
+    for (var i in colorPopRange) {
+        colorPopList.push(colorPopRange[i]);
+    }
+
+    popByDistrict={};
+    
+    function typeAndSet(d) {
+        d.mortality = +d.mortality;
+        countryById.set(d.states, d);
+        return d;
+        }
+
+    function getColor(district, population) {
+        let colorScheme = document.getElementById("colorSchemeSelect").value;
+        let colorScale = null;
+        colorScale = chroma.scale(colorScheme);
+
+        // console.log("getColor  : district -> " + district);
+        for (var  d in population) {
+            var subzone = population[d]['Subzone'];
+            if (subzone != null && subzone!="Total") {
+                let subzoneUpper = subzone.toUpperCase();
+
+                var ppl = population[d]['Population'];
+                if (ppl>0 && popByDistrict[subzone]) {
+                    true;
+                } else {
+                    popByDistrict[subzone.toUpperCase()] = ppl;
+                }
+
+                if (district.toUpperCase() == subzoneUpper) {
+                    //console.log("SUBZONE : " + subzoneUpper + " / " + ppl);
+                    for (var i in colorPopRange) {
+                        if (colorPopRange[i].lower<= ppl && ppl <= colorPopRange[i].upper) {
+                            //console.log("   colorPopRange["+i+"] : " + colorPopRange[i].toString()  );
+                            colorLevel = colorPopRange[i].level;
+                            break;
+                        }
+                    }
+                    //console.log("SUBZONE : " + subzoneUpper + " / " + ppl);
+
+                    const foundSubzone = colorPopRange.find(el => (el.lower<=ppl && ppl<=el.upper) );
+                    if(foundSubzone) {
+                        //console.log("foundSubzone : " + foundSubzone);
+                        //console.log(foundSubzone.level);
+                        //console.log("foundSubzone : " + colorScale(foundSubzone.level));
+                        // normal order
+                        //return colorScale(i/9);
+                        return colorScale(foundSubzone.level / 9);
+                    }
+                }
+            }
+        }
+
+        if ("features" in population) {
+            for (var f in population['features']) {
+                var feature = population['features'][f];
+                if( district == feature.properties.Name) {
+                    console.log("@@@ " + district, feature['properties']['Name']);
+
+                    return "blue";
+                }
+            }
+            //console.log(population[i]['features']);
+            //break;
+        }
+
+        return noDataColor// "#dddddd"; // NO DATA
+        }
+
+    function getPupulation(population, district) {
+        console.log(district);
+        console.log("getPupulation : ", district);
+
+        }
+
+    function parseTownData(d) {
+        arr=[];
+        if (d.properties) {
+            /*
+            for (field in ['Name','Region Name','Planning Area Code',]) {
+                for (f in d['properties']) {
+                    console.log("  d['  ']", f, " ->: ", d['properties'][f]);
+                }
+            } */
+
+            subzone =  d['properties']['Name'].toUpperCase();
+            document.getElementById("demo");
+            let ppl = popByDistrict[subzone];
+            if (ppl) {
+                ;
+            } else {
+                ppl = "-";
+            }
+            let townElem = document.getElementById("SelectedSubTown");
+            let townname = d['properties']['Name'];
+            displayname = "";
+            let words = townname.split(" ");
+            for (let w in words ) {
+                displayname = displayname + words[w][0].toUpperCase() + words[w].substr(1).toLowerCase() +  " ";
+            }
+
+
+            townElem.innerHTML = "Town: " + displayname;
+            
+            let SelectedPopulation = document.getElementById("SelectedPopulation");
+            SelectedPopulation.innerHTML = "Population : " + ppl;
+        }
+        }
+
+    function drawMap(data) {
+        //console.log("\n\n\n data \n\n\n");
+        //console.log(data);
+        let mapData = data[0];
+        let popData = data[1];
+
+        // Subzone
+        // Map and projection
+        var projection = d3.geoMercator()
+            .center([103.851959, 1.290270])
+            .fitExtent([[20, 20], [980, 580]], data[0]);
+
+        let geopath = d3.geoPath().projection(projection);
+
+        // map
+        svg.append("g")
+            .attr("id", "districts")
+            .selectAll("path")
+            .data(mapData.features)
+            .enter()
+            .append("path")
+            .attr("d", geopath)
+            
+            .attr('fill', function(d,i) {
+                return getColor(d.properties.Name, popData);
+            })
+
+            .on("mouseover", (event, d) => {
+                //console.log(d);
+                parseTownData(d);
+                // {Name: "EAST COAST", description: null, X_ADDR: "36386.5261", SHAPE_Length: "5333.008671", Central Area Indicator: "N", …
+
+                d3.select(event.currentTarget)
+                    .attr("stroke", "black")
+                    .attr("stroke-width", 2);
+            }) 
+            .on("mouseout", (event, d) => {
+                d3.select(event.currentTarget)
+                    .attr("stroke", "none");
+            });
+        }
+        // legend
+
+    function drawLegend(mapData,popData) {
+        var svg = document.getElementById("map");
+        let maplegend = document.getElementById("maplegend");
+        let legend = document.getElementById("legend");
+        
+        let colorScheme = document.getElementById("colorSchemeSelect").value;
+        let colorScale = chroma.scale(colorScheme);
+
+        let xpos = 555;
+        let ypos = 390;
+
+        for (var i in colorPopRange) {
+            let item = colorPopRange[i];
+            let lower=item.lower;
+            let upper=item.upper;
+            let label= "[" + lower + ".." + upper + "]";
+            let color = colorScale(item.level);
+            console.log(item);
+            
+            var newLabel = document.createElement('text');
+            newLabel.setAttribute('x', xpos.toString());
+            newLabel.setAttribute('y', ypos.toString());
+            newLabel.className = 'small';
+            newLabel.innerHTML=lower + " to " + upper;
+            //newLabel.innerHTML=" to ";
+            legend.appendChild(newLabel);
+
+            // <text x="560" y="390" class="small" id="legend2"> [ ??? to ??? ] </text> -->
+            //  <rect width="300" height="100" style="fill:rgb(0,0,255);stroke-width:3;stroke:rgb(0,0,0)" />
+            ypos += 10;
+        }
+    }
+    function drawD3() {
+        Promise.all([d3.json("./sgmap.json"),
+                     d3.csv("./population2020.csv"),
+                    ])
+            .then(
+                (mapData,popData) => {
+                    drawMap(mapData,popData);
+                    drawLegend(mapData,popData);
+                }
+                
+            );
+            //.then(drawLegend);
+
+        }
+
+    drawD3();
+
+    </script>
+
+</body>
+</html>

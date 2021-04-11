@@ -4,10 +4,11 @@ body {
 	font-family: 'Chalkduster', 'Helvetica', 'sans-serif';
 	text-align: center; 
 	margin: 100 
+	/*background-color: #EE3912;*/
 }
 
 #map {
-	width: 1000px;
+	width: 1500px;
 	height: 550px;
 }
 
@@ -20,7 +21,7 @@ body {
 .tooltip {
     position:absolute;
     background-color: rgba(255,255,255, 0.9);
-    width: 200px;
+    width: 100px;
     height: auto;
     text-align:center;
     margin-top:15px;
@@ -28,10 +29,8 @@ body {
 
 }
 
-    
 path:hover {
   stroke:#A0A0A0;
   opacity: 0.5;
-stroke-width:4;
+stroke-width:3;
 }
-

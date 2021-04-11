@@ -5,7 +5,7 @@
 
 <head>
   <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
-  <center><h1 style="color:#515A5A;"> 🧠 how densely populated is Singapore? 🧠 </h1></center>
+  <center><h1 style="color:#515A5A;"> 🧠 is Singapore dense? 🧠 </h1></center>
   <center><h3 style="color:#515A5A">Data retrieved from <a href="https://data.gov.sg">data.gov.sg</a></h3></center>
   <center><p style="color:#515A5A">Work in Progress: only the male population reflected </p></center>
   <title> Assignment Three </title>
@@ -23,8 +23,10 @@
   <script>
 
   var colorScale = d3.scaleThreshold()
-    .domain([10, 500, 1000, 1500, 5000, 10000, 15000, 20000, 25000])
-    .range(d3.schemeBlues[9]);
+    // .domain([10, 100, 500, 1000, 2500, 5000, 10000, 25000, 50000])
+    .domain(d3.range(2, 10))
+    // .range(['#800026', '#BD0026', '#E31A1C' , '#FC4E2A', '#FD8D3C' , '#FEB24C' , '#FED976' , '#FFEDA0']);
+    .range(d3.schemeBuPu[9]);
 
   let tiles = new L.tileLayer('https://maps-{s}.onemap.sg/v3/Default/{z}/{x}/{y}.png', {
     detectRetina: true,
@@ -88,13 +90,11 @@
           //Copy the data value into the JSON
           // basically creating a new value column in JSON data
           sgmap.features[n].properties.value = dataValue;
-          console.log(sgmap.features[n].properties.value)
+          console.log(dataValue)
           // console.log("hello")
-
           //stop looking through the JSON
           break;
         }
-      
     }
   }
 
@@ -110,44 +110,7 @@
   //                     '#FFEDA0';
   // }
   
-  svg.append("g")
-      .attr("id", "districts")
-      .selectAll("path")
-      .data(sgmap.features)
-      .enter()
-      .append("path")
-      .attr("d", geopath)
-      .classed("district", true) //black base map if commented out
-      .classed("leaflet-interactive", true);
-      // .on("mouseover", handleMouseOver)
-      // .on("mouseout", handleMouseOut);
-
-      // .on("mouseover", (event, d) => {
-      //   if (dataValue >0){
-      //     d3.select(".tooltip")
-      //     .text(jsonSubz + ": "+ dataValue)
-      //     .style("left", (event.pageX+13) + "px")
-      //     .style("top", (event.pageY+13) + "px");
-      // }
-      //   else {
-      //     d3.select(".tooltip")
-      //     .text(jsonSubz + ": "+ "undefined")
-      //     .style("left", (event.pageX+13) + "px")
-      //     .style("top", (event.pageY+13) + "px") }
-      //   })
-      // .attr("fill", d=> {
-      //     return colorScale(dataValue);
-      // })
-      // .on("mouseout", (event,d)=> {
-      //   d3.select(".tooltip")
-      //   .text("");
-      //   d3.select(svg.selectAll("path")
-      //   .attr("opacity", 1));
-      //   d3.select(event.currentTarget) 
-      // })
-
-  map.on('zoomend', onZoom);
-
+map.on('zoomend', onZoom);
   // zoom in and out
   function onZoom() {
     var bounds = geopath.bounds(data[0]),
@@ -157,48 +120,93 @@
     var svg = d3.select(map.getPanes().overlayPane).select("svg");
         
     svg
-        .attr("width", bottomRight[0] - topLeft[0])
-        .attr("height", bottomRight[1] - topLeft[1])
-        .style("left", topLeft[0] + "px")
-        .style("top", topLeft[1] + "px");
+      .attr("width", bottomRight[0] - topLeft[0])
+      .attr("height", bottomRight[1] - topLeft[1])
+      .style("left", topLeft[0] + "px")
+      .style("top", topLeft[1] + "px");
        
     svg.select("g").attr("transform", "translate(" + -topLeft[0] + "," + -topLeft[1] + ")");
     d3.select("g#districts").selectAll("path")
        .attr("d", geopath);
   }
-  // Create Event Handlers for mouse
-  function handleMouseOver(d, i) {  // Add interactivity
-    // Use D3 to select element, change color and size
-    d3.select(this).attr({
-      fill: "orange",
-      r: radius * 2
-    });
 
-    // Specify where to put label of text
-    svg.append("text").attr({
-       id: "t" + d.x + "-" + d.y + "-" + i,  // Create an id for text so we can select it later for removing on mouseout
-        x: function() { return xScale(d.x) - 30; },
-        y: function() { return yScale(d.y) - 15; }
-    })
-    .text(function() {
-      return [d.x, d.y];  // Value of the text
-    });
+  svg.append("g")
+      .attr("id", "districts")
+      .selectAll("path")
+      .data(sgmap.features)
+      .enter()
+      .append("path")
+      .attr("d", geopath)
+      // .classed("district", true) //black base map if commented out
+      .classed("leaflet-interactive", true)
+      // .on("mouseover", handleMouseOver)
+      // .on("mouseout", handleMouseOut);
+
+      .on("mouseover", (event, dataValue) => {
+        if (dataValue > 0){
+          d3.select(".tooltip")
+          .text(jsonSubz + ": "+ dataValue)
+          .style("left", (event.pageX+15) + "px")
+          .style("top", (event.pageY+15) + "px");
       }
+        else {
+          d3.select(".tooltip")
+          .text(jsonSubz + ": "+ "undefined")
+          .style("left", (event.pageX+15) + "px")
+          .style("top", (event.pageY+15) + "px") }
+        })
+      .attr("fill", dataValue => {
+          return colorScale(dataValue)
+      })
+      .on("mouseout", (event,dataValue)=> {
+        d3.select(".tooltip")
+        .text("");
+        d3.select(svg.selectAll("path")
+        .attr("opacity", 1));
+        d3.select(event.currentTarget) 
+      });
 
-  function handleMouseOut(d, i) {
-    // Use D3 to select element, change color back to normal
-    d3.select(this).attr({
-      fill: "black",
-      r: radius
-    });
+  // // Create Event Handlers for mouse
+  // function handleMouseOver(d, i) {  // Add interactivity
+  //   // Use D3 to select element, change color and size
+  //   if (dataValue >0){
+  //     d3.select(".tooltip")
+  //     .text(jsonSubz + ": "+ dataValue)
+  //     .style("left", (event.pageX+13) + "px")
+  //     .style("top", (event.pageY+13) + "px");
+  //   }
+  //   else {
+  //     d3.select(".tooltip")
+  //     .text(jsonSubz + ": "+ "undefined")
+  //     .style("left", (event.pageX+13) + "px")
+  //     .style("top", (event.pageY+13) + "px") 
+  //   };
+  //   // d3.select(this).attr({
+  //   //   fill: "orange",
+  //   //   r: radius * 2
+  //   // });
 
-    // Select text by id and then remove
-    d3.select("#t" + d.x + "-" + d.y + "-" + i).remove();  // Remove text location
-  }
+  //   // Specify where to put label of text
+  //   svg.append("text").attr({
+  //      id: "t" + d.x + "-" + d.y + "-" + i,  // Create an id for text so we can select it later for removing on mouseout
+  //       x: function() { return xScale(d.x) - 30; },
+  //       y: function() { return yScale(d.y) - 15; }
+  //   })
+  //   .text(function() {
+  //     return [d.x, d.y];  // Value of the text
+  //   });
+  //     }
 
+  // function handleMouseOut(d, i) {
+  //   // Use D3 to select element, change color back to normal
+  //   d3.select(this).attr({
+  //     fill: "black",
+  //     r: radius
+  //   });
 
-
-
+  //   // Select text by id and then remove
+  //   d3.select("#t" + d.x + "-" + d.y + "-" + i).remove();  // Remove text location
+  // }
 })
 
 </script>
