@@ -6,7 +6,7 @@
 <head>
   <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
   <center><h1 style="color:#515A5A;"> 🧠 is Singapore dense? 🧠 </h1></center>
-  <center><h3 style="color:#515A5A">Data retrieved from <a href="https://data.gov.sg">data.gov.sg</a></h3></center>
+  <center><p style="color:#515A5A">Data retrieved from <a href="https://data.gov.sg">data.gov.sg</a></p></center>
   <center><p style="color:#515A5A">Work in Progress: only the male population reflected </p></center>
   <title> Assignment Three </title>
   <link href = "index.css" rel = "stylesheet" type="text/css"/>
@@ -31,7 +31,7 @@
   let tiles = new L.tileLayer('https://maps-{s}.onemap.sg/v3/Default/{z}/{x}/{y}.png', {
     detectRetina: true,
     maxZoom: 20,
-    minZoom: 10,
+    minZoom: 11.5,
     //Do not remove this attribution
     attribution: '<img src="https://docs.onemap.sg/maps/images/oneMap64-01.png" style="height:20px;width:20px;">' +
                  'New OneMap | Map data © contributors, <a href="http://SLA.gov.sg">Singapore Land Authority</a>'
@@ -39,8 +39,8 @@
 
   let map = new L.Map("map", {
     // center: [1.347833, 103.809357], 
-    center: [1, 103.809357], 
-    zoom: 10,
+    center: [1.2789, 103.8536], 
+    zoom: 11.5,
     maxBounds: L.latLngBounds(L.latLng(1.1, 103.5), L.latLng(1.5, 104.3))
     })
     .addLayer(tiles);
@@ -77,13 +77,10 @@
     for(i=0; i<population2020.length; i++){
       // grab subzone name
       var dataSubz = population2020[i].Subzone;
-
       //grab data value, and convert from string to float
       var dataValue = parseFloat(population2020[i].Population);
-
       //find the corresponding state inside the GeoJSON
       for(var n = 0; n < sgmap.features.length; n++){
-
         // properties name gets the states name
         var jsonSubz = sgmap.features[n].properties.Name;
         // if statment to merge by name of state
@@ -91,13 +88,12 @@
           //Copy the data value into the JSON
           // basically creating a new value column in JSON data
           sgmap.features[n].properties.value = dataValue;
-          console.log(dataValue)
-          // console.log("hello")
+          console.log(dataValue, dataSubz)
           //stop looking through the JSON
           break;
         }
+      }
     }
-  }
   
 map.on('zoomend', onZoom);
   // zoom in and out
@@ -134,13 +130,13 @@ map.on('zoomend', onZoom);
     .on("mouseover", (event, dataValue) => {
       if (dataValue > 0){
         d3.select(".tooltip")
-        .text(jsonSubz + ": "+ dataValue)
+        .text(dataSubz + ": "+ dataValue)
         .style("left", (event.pageX+15) + "px")
         .style("top", (event.pageY+15) + "px");
       }
       else {
         d3.select(".tooltip")
-        .text(jsonSubz + ": "+ "undefined")
+        .text(dataSubz + ": "+ "undefined")
         .style("left", (event.pageX+15) + "px")
         .style("top", (event.pageY+15) + "px") }
       })
