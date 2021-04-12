@@ -145,7 +145,7 @@ map.on('zoomend', onZoom);
         .style("top", (event.pageY+15) + "px") }
       })
     .attr("fill", dataValue => {
-        return colorScale(dataValue)
+      return colorScale(dataValue)
     })
     .on("mouseout", (event,dataValue)=> {
       d3.select(".tooltip")
