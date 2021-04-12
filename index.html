@@ -137,7 +137,8 @@ map.on('zoomend', onZoom);
       }
       else {
         d3.select(".tooltip")
-        .text(dataSubz + ": "+ "undefined")
+        // .text(dataSubz + ": "+ "undefined")
+        .text(dataValue + ": "+ "undefined")
         .style("left", (event.pageX+15) + "px")
         .style("top", (event.pageY+15) + "px") }
       })
