@@ -8,7 +8,8 @@
   <center><h1 style="color:#515A5A;"> 🧠 is Singapore dense? 🧠 </h1></center>
   <center><p style="color:#515A5A">Data retrieved from <a href="https://data.gov.sg">data.gov.sg</a></p></center>
   <center><p style="color:#515A5A">Work in Progress: only the male population reflected </p></center>
-  <title> Assignment Three </title>
+  <title> Assignment Three </title></center>
+  <meta name="author" content="Rachel Ng (1002409)">
   <link href = "index.css" rel = "stylesheet" type="text/css"/>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
   <div class="tooltip"></div>
@@ -26,7 +27,7 @@
     // .domain([10, 100, 500, 1000, 2500, 5000, 10000, 25000, 50000])
     .domain(d3.range(2, 10000))
     // .range(['#800026', '#BD0026', '#E31A1C' , '#FC4E2A', '#FD8D3C' , '#FEB24C' , '#FED976' , '#FFEDA0']);
-    .range(d3.schemeBuPu[9]);
+    .range(d3.schemeBlues[9]);
 
   let tiles = new L.tileLayer('https://maps-{s}.onemap.sg/v3/Default/{z}/{x}/{y}.png', {
     detectRetina: true,

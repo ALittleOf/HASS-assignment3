@@ -4,11 +4,11 @@ body {
 	font-family: 'Chalkduster', 'Helvetica', 'sans-serif';
 	text-align: center; 
 	margin: 100 
-	/*background-color: #EE3912;*/
+	background: #EE3912;
 }
 
 #map {
-	width: 1500px;
+	width: 1390px;
 	height: 600px;
 }
 
