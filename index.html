@@ -32,7 +32,7 @@
   let tiles = new L.tileLayer('https://maps-{s}.onemap.sg/v3/Default/{z}/{x}/{y}.png', {
     detectRetina: true,
     maxZoom: 20,
-    minZoom: 11.5,
+    minZoom: 11,
     //Do not remove this attribution
     attribution: '<img src="https://docs.onemap.sg/maps/images/oneMap64-01.png" style="height:20px;width:20px;">' +
                  'New OneMap | Map data © contributors, <a href="http://SLA.gov.sg">Singapore Land Authority</a>'
@@ -41,7 +41,7 @@
   let map = new L.Map("map", {
     // center: [1.347833, 103.809357], 
     center: [1.2789, 103.8536], 
-    zoom: 11.5,
+    zoom: 11,
     maxBounds: L.latLngBounds(L.latLng(1.1, 103.5), L.latLng(1.5, 104.3))
     })
     .addLayer(tiles);
@@ -131,14 +131,14 @@ map.on('zoomend', onZoom);
     .on("mouseover", (event, d) => {
       if (d.properties.value > 0){
         d3.select(".tooltip")
-        .text(d.properties.Name + ": "+ d.properties.value)
+        .text(d.properties.Name + "\n"+ d.properties.value)
         .style("fill", function(d) {return colorScale(d.properties.value)})
         // .style("left", (event.pageX+15) + "px")
         // .style("top", (event.pageY+15) + "px");
       }
       else {
         d3.select(".tooltip")
-        .text(d.properties.Name + ": "+ "undefined")
+        .text(d.properties.Name + "\n"+ "undefined")
         // .text(dataValue + ": "+ "undefined")
         .style("fill", function(d) {return colorScale(d.properties.value)})
         // .style("left", (event.pageX+15) + "px")
