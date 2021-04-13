@@ -129,10 +129,10 @@ map.on('zoomend', onZoom);
     // .on("mouseout", handleMouseOut);
 
     .on("mouseover", (event, dataValue) => {
-      if (d.properties.value > 0){
+      if (dataValue.properties.value > 0){
         d3.select(".tooltip")
-        .text(d.properties.Name + ": "+ d.properties.value)
-        .style("fill", function(d) {return colorScale(d.properties.value)})
+        .text(dataValue.properties.Name + ": "+ dataValue.properties.value)
+        .style("fill", function(dataValue) {return colorScale(d.properties.value)})
         // .style("left", (event.pageX+15) + "px")
         // .style("top", (event.pageY+15) + "px");
       }
