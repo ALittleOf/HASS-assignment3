@@ -8,8 +8,8 @@ body {
 }
 
 #map {
-	width: 1000px;
-	height: 550px;
+	width: 1390px;
+	height: 600px;
 }
 
 .district {
@@ -23,7 +23,7 @@ body {
 	background: #eee;
 	color: #333;
 	font-size: 13px;
-	top: 420px;
+	top: 435px;
 	left: 565px;
 	padding: 5px;
 	position: relative;
