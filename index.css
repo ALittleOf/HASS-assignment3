@@ -32,7 +32,6 @@ body {
 	width: 190px;
 	z-index: 1000; /*specifies the stack order of elements*/
 	border: 2px dotted grey;
-	border-radius: 10px;
 }
 
 path:hover {

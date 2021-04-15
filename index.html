@@ -8,11 +8,13 @@
   <center><h1 style="color:grey;"> 🧠 is Singapore dense? 🧠 </h1></center>
   <center><p style="color:grey">Data retrieved from <a href="https://data.gov.sg">data.gov.sg</a></p></center>
   <center><p style="color:grey">Work in Progress: only the male population reflected </p></center>
-  <title> Assignment Three </title></center>
+  <title> Assignment Three & Four </title></center>
   <meta name="author" content="Rachel Ng (1002409)">
   <link href = "index.css" rel = "stylesheet" type="text/css"/>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
   <div class="tooltip"></div>
+  <button id="bt1">male</button>
+  <button id="bt2">female</button>
 </head>
 
 <body>
@@ -31,7 +33,7 @@
 
   let tiles = new L.tileLayer('https://maps-{s}.onemap.sg/v3/Default/{z}/{x}/{y}.png', {
     detectRetina: true,
-    maxZoom: 20,
+    maxZoom: 19,
     minZoom: 11,
     //Do not remove this attribution
     attribution: '<img src="https://docs.onemap.sg/maps/images/oneMap64-01.png" style="height:20px;width:20px;">' +
@@ -64,98 +66,99 @@
   let projection = d3.geoTransform({point: projectPoint});
   let geopath = d3.geoPath().projection(projection);
 
-  // Load external data and boot (put full GitHub url)
-  Promise.all([d3.json("sgmap.json"), d3.csv("population2020.csv")]).then(data => {
+  function drawMap(gender){
+    // Load external data and boot (put full GitHub url)
+    Promise.all([d3.json("sgmap.json"), d3.csv("population2020.csv")]).then(data => {
+      let sgmap = data[0]
+      let population2020 = data[1]
+      let geopath = d3.geoPath().projection(projection);
 
-    // console.log(data[0]);
-    // console.log(data[1]);
-
-    let sgmap = data[0]
-    let population2020 = data[1]
-    let geopath = d3.geoPath().projection(projection);
-
-    // adding population to subzone
-    for(i=0; i<population2020.length; i++){
-      // grab subzone name
-      var dataSubz = population2020[i].Subzone;
-      //grab data value, and convert from string to float
-      var dataValue = parseFloat(population2020[i].Population);
-      //find the corresponding state inside the GeoJSON
-      for(var n = 0; n < sgmap.features.length; n++){
-        // properties name gets the states name
-        var jsonSubz = sgmap.features[n].properties.Name;
-        // if statment to merge by name of state
-        if(dataSubz.toUpperCase() == jsonSubz){
-          //Copy the data value into the JSON
-          // basically creating a new value column in JSON data
-          sgmap.features[n].properties.value = dataValue;
-          console.log(dataValue, dataSubz)
-          //stop looking through the JSON
-          break;
+      // adding population to subzone
+      for(i=0; i<population2020.length; i++){
+        // grab subzone name
+        var dataSubz = population2020[i].Subzone;
+        //grab data value, and convert from string to float
+        var dataValue = parseFloat(population2020[i].Population);
+        //find the corresponding state inside the GeoJSON
+        for(var n = 0; n < sgmap.features.length; n++){
+          // properties name gets the states name
+          var jsonSubz = sgmap.features[n].properties.Name;
+          // if statment to merge by name of state
+          if(dataSubz.toUpperCase() == jsonSubz){
+            //Copy the data value into the JSON
+            // basically creating a new value column in JSON data
+            sgmap.features[n].properties.value = dataValue;
+            console.log(dataValue, dataSubz)
+            //stop looking through the JSON
+            break;
+          }
         }
       }
-    }
-  
-map.on('zoomend', onZoom);
-  // zoom in and out
-  function onZoom() {
-    var bounds = geopath.bounds(data[0]),
-        topLeft = bounds[0],
-        bottomRight = bounds[1];
+    
+    map.on('zoomend', onZoom);
+    // zoom in and out
+    function onZoom() {
+      var bounds = geopath.bounds(data[0]),
+          topLeft = bounds[0],
+          bottomRight = bounds[1];
 
-    var svg = d3.select(map.getPanes().overlayPane).select("svg");
-        
-    svg
-      .attr("width", bottomRight[0] - topLeft[0])
-      .attr("height", bottomRight[1] - topLeft[1])
-      .style("left", topLeft[0] + "px")
-      .style("top", topLeft[1] + "px");
-       
-    svg.select("g").attr("transform", "translate(" + -topLeft[0] + "," + -topLeft[1] + ")");
-    d3.select("g#districts").selectAll("path")
-       .attr("d", geopath);
+      var svg = d3.select(map.getPanes().overlayPane).select("svg");
+          
+      svg
+        .attr("width", bottomRight[0] - topLeft[0])
+        .attr("height", bottomRight[1] - topLeft[1])
+        .style("left", topLeft[0] + "px")
+        .style("top", topLeft[1] + "px");
+         
+      svg.select("g").attr("transform", "translate(" + -topLeft[0] + "," + -topLeft[1] + ")");
+      d3.select("g#districts").selectAll("path")
+         .attr("d", geopath);
+    }
+
+    svg.append("g")
+      .attr("id", "districts")
+      .selectAll("path")
+      .data(sgmap.features)
+      .enter()
+      .append("path")
+      .attr("d", geopath)
+      // .classed("district", true) //black base map if commented out
+      .classed("leaflet-interactive", true)
+      // .on("mouseover", handleMouseOver)
+      // .on("mouseout", handleMouseOut);
+
+      .on("mouseover", (event, d) => {
+        if (d.properties.value > 0){
+          d3.select(".tooltip")
+          .text(d.properties.Name + "\n"+ d.properties.value)
+        }
+        else {
+          d3.select(".tooltip")
+          .text(d.properties.Name + "\n" + "undefined")
+        }
+      })
+      .attr("fill", d => {
+        return colorScale(d.properties.value)
+      })
+      .on("mouseout", (event,d)=> {
+        d3.select(".tooltip")
+        .text("");
+        d3.select(svg.selectAll("path")
+        .attr("opacity", 0.96));
+        d3.select(event.currentTarget) 
+      });
+    })
+
   }
 
-  svg.append("g")
-    .attr("id", "districts")
-    .selectAll("path")
-    .data(sgmap.features)
-    .enter()
-    .append("path")
-    .attr("d", geopath)
-    // .classed("district", true) //black base map if commented out
-    .classed("leaflet-interactive", true)
-    // .on("mouseover", handleMouseOver)
-    // .on("mouseout", handleMouseOut);
-
-    .on("mouseover", (event, d) => {
-      if (d.properties.value > 0){
-        d3.select(".tooltip")
-        .text(d.properties.Name + "\n"+ d.properties.value)
-        .style("fill", function(d) {return colorScale(d.properties.value)})
-        // .style("left", (event.pageX+15) + "px")
-        // .style("top", (event.pageY+15) + "px");
-      }
-      else {
-        d3.select(".tooltip")
-        .text(d.properties.Name + "\n"+ "undefined")
-        // .text(dataValue + ": "+ "undefined")
-        .style("fill", function(d) {return colorScale(d.properties.value)})
-        // .style("left", (event.pageX+15) + "px")
-        // .style("top", (event.pageY+15) + "px") 
-      }
-    })
-    .attr("fill", d => {
-      return colorScale(d.properties.value)
-    })
-    .on("mouseout", (event,d)=> {
-      d3.select(".tooltip")
-      .text("");
-      d3.select(svg.selectAll("path")
-      .attr("opacity", 1));
-      d3.select(event.currentTarget) 
+  d3.select("#bt1").on("click", function() {
+      drawMap("male");
     });
-})
+    d3.select("#bt2").on("click", function() {
+      drawMap("female");
+    });
+    
+  drawMap("male");
 
 </script>
 
