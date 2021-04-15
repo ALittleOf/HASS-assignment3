@@ -1,10 +1,20 @@
 // Assignment Four (02.526 Interactive Data Visualisation)
 
-var colorScale = d3.scaleThreshold()
-  // .domain([10, 100, 500, 1000, 2500, 5000, 10000, 25000, 50000])
-  .domain(d3.range(2, 10000))
-  // .range(['#800026', '#BD0026', '#E31A1C' , '#FC4E2A', '#FD8D3C' , '#FEB24C' , '#FED976' , '#FFEDA0']);
-  .range(d3.schemeBlues[9]);
+// var colorScale = d3.scaleLinear()
+//   // .domain([10, 100, 500, 1000, 2500, 5000, 10000, 25000, 50000])
+//   .domain(d3.range(2, 10000))
+//   // .range(['#800026', '#BD0026', '#E31A1C' , '#FC4E2A', '#FD8D3C' , '#FEB24C' , '#FED976' , '#FFEDA0']);
+//   .range(d3.schemeBlues[9]);
+
+let colorScale = d3.scaleLinear()
+  .domain([-1, 0, 1])
+  .range(["green", "white", "orange"])
+
+// var colorScale = d3.schemeBlues[9];
+
+// let colour = d3.scaleQuantize()
+//   .domain([10, 20000]) //scale becomes too skewed if use max
+//   .range(colorScale);
 
 let tiles = new L.tileLayer('https://maps-{s}.onemap.sg/v3/Default/{z}/{x}/{y}.png', {
   detectRetina: true,
@@ -99,9 +109,6 @@ function drawMap(gender){
     .attr("d", geopath)
     // .classed("district", true) //black base map if commented out
     .classed("leaflet-interactive", true)
-    // .on("mouseover", handleMouseOver)
-    // .on("mouseout", handleMouseOut);
-
     .on("mouseover", (event, d) => {
       if (d.properties.value > 0){
         d3.select(".tooltip")
