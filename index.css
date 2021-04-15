@@ -8,7 +8,7 @@ body {
 }
 
 #map {
-	width: 1390px;
+	width: 1410px;
 	height: 550px;
 }
 
@@ -32,6 +32,7 @@ body {
 	width: 190px;
 	z-index: 1000; /*specifies the stack order of elements*/
 	border: 2px dotted grey;
+	border-radius: 2px
 }
 
 path:hover {
