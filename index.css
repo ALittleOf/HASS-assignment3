@@ -3,13 +3,13 @@
 body {
 	font-family: 'Consolas', 'Arial';
 	text-align: center; 
-	margin: 100 
+	/*margin: 100 */
 	/*background: grey;*/
 }
 
 #map {
 	width: 1390px;
-	height: 600px;
+	height: 5500px;
 }
 
 .district {
@@ -24,7 +24,7 @@ body {
 	color: grey;
 	font-size: 15px;
 	top: 500px;
-	left: 600px;
+	left: 800px;
 	padding: 5px;
 	position: relative;
 	text-align: center;
