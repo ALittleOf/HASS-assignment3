@@ -1,10 +1,10 @@
 /*Assignment Three (02.526 Interactive Data Visualisation)*/
 
 body {
-	font-family: 'Chalkduster', 'Helvetica', 'sans-serif';
+	font-family: 'Consolas', 'Arial';
 	text-align: center; 
 	margin: 100 
-	background: #EE3912;
+	background: grey;
 }
 
 #map {
@@ -14,24 +14,24 @@ body {
 
 .district {
     fill: none;
-    stroke: #EE3912;
+    stroke: grey;
     stroke-dasharray: 3;
 }
 
 .tooltip {
 	display: block;
 	background: #eee;
-	color: #333;
+	color: grey;
 	font-size: 13px;
-	top: 425px;
-	left: 565px;
+	top: 450px;
+	left: 600px;
 	padding: 5px;
 	position: relative;
 	text-align: center;
 	height: 58px;
 	width: 200px;
 	z-index: 1000;
-	border: 1px solid black;
+	border: 1px grey;
 	border-radius: 10px;
 }
 
