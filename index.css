@@ -22,16 +22,16 @@ body {
 	display: block;
 	background: #eee;
 	color: grey;
-	font-size: 15px;
-	top: 390px;
-	left: 1200px;
+	font-size: 17px;
+	top: 370px;
+	left: 1000px;
 	padding: 5px;
 	position: relative;
 	text-align: center;
-	height: 58px;
-	width: 200px;
+	height: 59px;
+	width: 190px;
 	z-index: 1000; /*specifies the stack order of elements*/
-	border: 1px dotted grey;
+	border: 2px dotted grey;
 	border-radius: 10px;
 }
 
