@@ -106,11 +106,11 @@
           
       svg
         .attr("width", bottomRight[0] - topLeft[0])
-        .attr("height", bottomRight[1] - topLeft[1])
+        .attr("height", bottomRight[0] - topLeft[0])
         .style("left", topLeft[0] + "px")
-        .style("top", topLeft[1] + "px");
+        .style("top", topLeft[0] + "px");
          
-      svg.select("g").attr("transform", "translate(" + -topLeft[0] + "," + -topLeft[1] + ")");
+      svg.select("g").attr("transform", "translate(" + -topLeft[0] + "," + -topLeft[0] + ")");
       d3.select("g#districts").selectAll("path")
          .attr("d", geopath);
     }
