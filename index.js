@@ -3,7 +3,6 @@
 let colorScale = d3.scaleLinear()
   .domain([10, 100, 500, 1000, 2500, 5000, 10000, 25000, 50000])
   .range(d3.schemeBlues[9]);
-  // .range(["green", "white", "orange"])
 
 let tiles = new L.tileLayer('https://maps-{s}.onemap.sg/v3/Default/{z}/{x}/{y}.png', {
   detectRetina: true,
@@ -24,17 +23,18 @@ let map = new L.Map("map", {
 
 let svg = d3.select(map.getPanes().overlayPane)
   .append("svg")
-  // .attr("width", 1000)
-  // .attr("height", 600)
-  .attr("width", window.innerWidth)
-  .attr("height", window.innerHeight)
+    .attr("width", 1390)
+    .attr("height", 550)
+  // .attr("width", window.innerWidth)
+  // .attr("height", window.innerHeight)
       .append("g")
       .attr("id","svgLayer")
       .attr("class", "leaflet-zoom-hide");
 
 function projectPoint(x, y) {
   var point = map.latLngToLayerPoint(new L.LatLng(y, x));
-  this.stream.point(point.x, point.y);
+  // streams the projection without saving a copy
+  this.stream.point(point.x, point.y); 
 }
 
 let projection = d3.geoTransform({point: projectPoint});
@@ -86,7 +86,7 @@ function drawMap(gender){
        
     svg.select("g").attr("transform", "translate(" + -topLeft[0] + "," + -topLeft[0] + ")");
     d3.select("g#districts").selectAll("path")
-       .attr("d", geopath);
+      .attr("d", geopath);
   }
 
   svg.append("g")
@@ -122,10 +122,9 @@ function drawMap(gender){
 }
 
 d3.select("#bt1").on("click", function() {
-    drawMap("male");
+  drawMap("male");
 });
 d3.select("#bt2").on("click", function() {
   drawMap("female");
 });
-  
 drawMap("male");
