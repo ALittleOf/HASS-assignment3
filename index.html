@@ -155,48 +155,6 @@ map.on('zoomend', onZoom);
       .attr("opacity", 1));
       d3.select(event.currentTarget) 
     });
-
-  // // Create Event Handlers for mouse
-  // function handleMouseOver(d, i) {  // Add interactivity
-  //   // Use D3 to select element, change color and size
-  //   if (dataValue >0){
-  //     d3.select(".tooltip")
-  //     .text(jsonSubz + ": "+ dataValue)
-  //     .style("left", (event.pageX+13) + "px")
-  //     .style("top", (event.pageY+13) + "px");
-  //   }
-  //   else {
-  //     d3.select(".tooltip")
-  //     .text(jsonSubz + ": "+ "undefined")
-  //     .style("left", (event.pageX+13) + "px")
-  //     .style("top", (event.pageY+13) + "px") 
-  //   };
-  //   // d3.select(this).attr({
-  //   //   fill: "orange",
-  //   //   r: radius * 2
-  //   // });
-
-  //   // Specify where to put label of text
-  //   svg.append("text").attr({
-  //      id: "t" + d.x + "-" + d.y + "-" + i,  // Create an id for text so we can select it later for removing on mouseout
-  //       x: function() { return xScale(d.x) - 30; },
-  //       y: function() { return yScale(d.y) - 15; }
-  //   })
-  //   .text(function() {
-  //     return [d.x, d.y];  // Value of the text
-  //   });
-  //     }
-
-  // function handleMouseOut(d, i) {
-  //   // Use D3 to select element, change color back to normal
-  //   d3.select(this).attr({
-  //     fill: "black",
-  //     r: radius
-  //   });
-
-  //   // Select text by id and then remove
-  //   d3.select("#t" + d.x + "-" + d.y + "-" + i).remove();  // Remove text location
-  // }
 })
 
 </script>

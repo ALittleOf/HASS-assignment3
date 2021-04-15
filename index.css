@@ -4,7 +4,7 @@ body {
 	font-family: 'Consolas', 'Arial';
 	text-align: center; 
 	margin: 100 
-	background: grey;
+	/*background: grey;*/
 }
 
 #map {
@@ -31,7 +31,7 @@ body {
 	height: 58px;
 	width: 200px;
 	z-index: 1000;
-	border: 1px grey;
+	border: 1px dotted grey;
 	border-radius: 10px;
 }
 
