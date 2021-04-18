@@ -28,8 +28,8 @@ let map = new L.Map("map", {
 
 let svg = d3.select(map.getPanes().overlayPane)
   .append("svg")
-    .attr("width", 1390)
-    .attr("height", 550)
+    .attr("width", 845)
+    .attr("height", 465)
   // .attr("width", window.innerWidth)
   // .attr("height", window.innerHeight)
       .append("g")
