@@ -107,11 +107,11 @@ function maleMap(male){
     .on("mouseover", (event, d) => {
       if (d.properties.value > 0){
         d3.select(".tooltip")
-        .text(d.properties.Name + "\n"+ d.properties.value)
+        .html('<b>' + d.properties.Name + '</b>' +'<br>' +'<br>'+ d.properties.value)
       }
       else {
         d3.select(".tooltip")
-        .text(d.properties.Name + "\n" + "undefined")
+        .html('<b>' + d.properties.Name + '</b>' +'<br>' +'<br>'+ "undefined")
       }
     })
     .attr("fill", d => {
@@ -188,11 +188,11 @@ function femaleMap(female){
     .on("mouseover", (event, b) => {
       if (b.properties.value > 0){
         d3.select(".tooltip")
-        .text(b.properties.Name + "\n"+ b.properties.value)
+        .html('<u>' + b.properties.Name + '</u>'+ '<br>'+ b.properties.value)
       }
       else {
         d3.select(".tooltip")
-        .text(b.properties.Name + "\n" + "undefined")
+        .html('<u>' + b.properties.Name +'</u>' + '<br>' + "undefined")
       }
     })
     .attr("fill", b => {

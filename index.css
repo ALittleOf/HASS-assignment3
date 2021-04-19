@@ -3,13 +3,13 @@
 body {
 	font-family: 'Consolas', 'Arial';
 	text-align: center; 
-	/*margin: 100 */
+	margin: 0;
 	/*background: grey;*/
 }
 
 #map {
 	width: 1410px;
-	height: 550px;
+	height: 465px;
 }
 
 .district {
@@ -23,16 +23,17 @@ body {
 	background: #eee;
 	color: grey;
 	font-size: 17px;
-	top: 390px;
-	left: 1100px;
+	top: 430px;
+	left: 650px;
 	padding: 5px;
 	position: relative;
 	text-align: center;
 	height: 59px;
-	width: 190px;
+	width: 270px;
 	z-index: 1000; /*specifies the stack order of elements*/
 	border: 2px dotted grey;
 	border-radius: 2px
+
 }
 
 path:hover {
